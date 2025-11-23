@@ -1,5 +1,9 @@
-pub mod git;
+mod auth;
+mod checkout;
+mod client;
+mod error;
+mod pull;
 
-pub use git::{
-    GitCheckout, GitClient, GitError, GitPuller, SshConfig, SshError,
-};
+pub use auth::SshConfig;
+pub use client::GitClient;
+pub use error::{GitError, SshError};

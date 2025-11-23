@@ -1,9 +1,9 @@
 use std::path::Path;
 
-use crate::git::{GitError, SshConfig};
-
-use super::checkout::GitCheckout;
-use super::pull::GitPuller;
+use crate::auth::SshConfig;
+use crate::checkout::GitCheckout;
+use crate::error::GitError;
+use crate::pull::GitPuller;
 
 /// Git operations client that handles repository pulling and checkout with SSH authentication
 pub struct GitClient {

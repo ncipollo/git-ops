@@ -1,7 +1,8 @@
 use git2::Repository;
 use std::path::Path;
 
-use crate::git::{CredentialCallback, GitError, SshConfig};
+use crate::auth::{CredentialCallback, SshConfig};
+use crate::error::GitError;
 
 /// Pull operations for Git repositories
 pub struct GitPuller {

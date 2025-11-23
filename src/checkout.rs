@@ -1,7 +1,7 @@
 use git2::Repository;
 use std::path::Path;
 
-use crate::git::GitError;
+use crate::error::GitError;
 
 /// Checkout operations for Git repositories
 pub struct GitCheckout;
