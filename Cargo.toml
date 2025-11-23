@@ -1,0 +1,12 @@
+[package]
+name = "git-ops"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+git2 = "0.18.3"
+thiserror = "1.0.69"
+dirs = "5.0.1"
+
+[dev-dependencies]
+tempfile = "3.21.0"
