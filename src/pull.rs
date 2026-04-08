@@ -1,8 +1,9 @@
 use git2::Repository;
 use std::path::Path;
 
-use crate::auth::{CredentialCallback, SshConfig};
+use crate::auth::SshConfig;
 use crate::error::GitError;
+use crate::https;
 
 /// Pull operations for Git repositories
 pub struct GitPuller {
@@ -50,9 +51,9 @@ impl GitPuller {
         // Get remote URL to determine authentication strategy
         let remote_url = remote.url().unwrap_or("");
 
-        if Self::is_https_url(remote_url) {
+        if https::is_https_url(remote_url) {
             // Try HTTPS authentication (with PAT fallback)
-            if let Ok(credentials_callback) = Self::https_credentials_callback() {
+            if let Ok(credentials_callback) = https::https_credentials_callback() {
                 callbacks.credentials(credentials_callback);
             }
         } else {
@@ -140,83 +141,5 @@ impl GitPuller {
         }
 
         Ok(())
-    }
-
-    /// Get git config and check for credential helper configuration
-    fn get_git_config_with_credential_helpers() -> Result<git2::Config, git2::Error> {
-        let config = git2::Config::open_default().or_else(|_| git2::Config::new())?;
-
-        // Check if credential helpers are configured
-        let has_credential_helper = config.get_string("credential.helper").is_ok()
-            || config.entries(Some("credential\\..*\\.helper")).is_ok();
-
-        if !has_credential_helper {
-            eprintln!("Warning: No git credential helpers configured. Consider setting up a credential helper for better authentication:");
-            eprintln!("  git config --global credential.helper store");
-            eprintln!("  git config --global credential.helper cache");
-            eprintln!("  git config --global credential.helper osxkeychain  # macOS");
-            eprintln!("  git config --global credential.helper manager-core  # Cross-platform");
-        }
-
-        Ok(config)
-    }
-
-    /// Create credentials callback for HTTPS authentication using Git credential manager
-    fn https_credentials_callback() -> Result<CredentialCallback, GitError> {
-        Ok(Box::new(
-            |url: &str, username_from_url: Option<&str>, allowed_types: git2::CredentialType| {
-                // Try git credential helper first
-                if allowed_types.contains(git2::CredentialType::USER_PASS_PLAINTEXT) {
-                    if let Ok(config) = Self::get_git_config_with_credential_helpers() {
-                        if let Ok(cred) =
-                            git2::Cred::credential_helper(&config, url, username_from_url)
-                        {
-                            return Ok(cred);
-                        }
-                    }
-                }
-
-                // Fallback to environment variables for backward compatibility
-                if allowed_types.contains(git2::CredentialType::USER_PASS_PLAINTEXT) {
-                    if let Ok(token) = std::env::var("GITHUB_TOKEN") {
-                        // For GitHub PAT, username can be anything (token is what matters)
-                        let username = username_from_url.unwrap_or("git");
-                        if let Ok(cred) = git2::Cred::userpass_plaintext(username, &token) {
-                            return Ok(cred);
-                        }
-                    }
-
-                    // Try alternative environment variable names
-                    if let Ok(token) = std::env::var("GH_TOKEN") {
-                        let username = username_from_url.unwrap_or("git");
-                        if let Ok(cred) = git2::Cred::userpass_plaintext(username, &token) {
-                            return Ok(cred);
-                        }
-                    }
-
-                    if let Ok(token) = std::env::var("GITHUB_ACCESS_TOKEN") {
-                        let username = username_from_url.unwrap_or("git");
-                        if let Ok(cred) = git2::Cred::userpass_plaintext(username, &token) {
-                            return Ok(cred);
-                        }
-                    }
-                }
-
-                // Try default credentials
-                if allowed_types.contains(git2::CredentialType::DEFAULT) {
-                    if let Ok(cred) = git2::Cred::default() {
-                        return Ok(cred);
-                    }
-                }
-
-                // If we get here, authentication failed
-                Err(git2::Error::from_str("No HTTPS credentials found. Configure git credential helper or set GITHUB_TOKEN environment variable for private repositories."))
-            },
-        ))
-    }
-
-    /// Check if URL is HTTPS
-    fn is_https_url(url: &str) -> bool {
-        url.starts_with("https://")
     }
 }

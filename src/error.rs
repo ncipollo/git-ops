@@ -36,6 +36,20 @@ pub enum GitError {
         source: git2::Error,
     },
 
+    #[error("Repository already exists at {0}")]
+    RepositoryExists(PathBuf),
+
+    #[error("Failed to clone repository from {url} to {path}: {source}")]
+    CloneFailed {
+        url: String,
+        path: PathBuf,
+        #[source]
+        source: git2::Error,
+    },
+
+    #[error("Invalid repository URL: {0}")]
+    InvalidUrl(String),
+
     #[error("Git operation failed: {0}")]
     Git(#[from] git2::Error),
 }
@@ -99,6 +113,18 @@ impl GitError {
                     branch,
                     path.display()
                 )
+            }
+            GitError::RepositoryExists(path) => {
+                format!(
+                    "Repository already exists at {}. Use 'pull' to update it instead.",
+                    path.display()
+                )
+            }
+            GitError::CloneFailed { url, .. } => {
+                format!("Failed to clone repository from {url}. Check your credentials and network connection.")
+            }
+            GitError::InvalidUrl(url) => {
+                format!("Invalid repository URL: {url}. Make sure it's a valid Git URL.")
             }
             GitError::Ssh(ssh_error) => ssh_error.user_message(),
             _ => self.to_string(),
