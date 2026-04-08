@@ -51,4 +51,3 @@ impl Default for GitClient {
         Self::new().expect("Failed to create default GitClient")
     }
 }
-

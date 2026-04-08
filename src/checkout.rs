@@ -69,12 +69,10 @@ impl GitCheckout {
         };
 
         // Set HEAD to the branch
-        let ref_name = reference.name().ok_or_else(|| {
-            GitError::CheckoutFailed {
-                branch: branch_name.to_string(),
-                path: repo_path.to_path_buf(),
-                source: git2::Error::from_str("Reference has no name"),
-            }
+        let ref_name = reference.name().ok_or_else(|| GitError::CheckoutFailed {
+            branch: branch_name.to_string(),
+            path: repo_path.to_path_buf(),
+            source: git2::Error::from_str("Reference has no name"),
         })?;
         repo.set_head(ref_name)
             .map_err(|e| GitError::CheckoutFailed {
@@ -94,4 +92,3 @@ impl GitCheckout {
         Ok(())
     }
 }
-

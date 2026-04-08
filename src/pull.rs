@@ -220,4 +220,3 @@ impl GitPuller {
         url.starts_with("https://")
     }
 }
-
