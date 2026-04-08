@@ -5,9 +5,11 @@ A Rust library for performing common git operations with support for SSH authent
 ## Features
 
 - **Git Client**: Simple interface for git operations
+- **Clone Operations**: Clone repositories via SSH or HTTPS
 - **Branch Checkout**: Checkout branches in repositories
 - **Pull Operations**: Pull changes from remote repositories
 - **SSH Authentication**: Built-in SSH credential handling
+- **HTTPS Authentication**: Credential helper and environment variable support
 - **Error Handling**: Comprehensive error types for git operations
 
 ## Installation
@@ -30,7 +32,10 @@ use std::path::Path;
 // Create a git client (uses SSH config from environment)
 let client = GitClient::new()?;
 
-// Pull changes from an existing repository
+// Clone a repository (SSH or HTTPS detected automatically)
+client.clone("git@github.com:user/repo.git", Path::new("/path/to/repo"))?;
+
+// Pull changes
 client.pull(Path::new("/path/to/repo"))?;
 
 // Checkout a branch
@@ -61,8 +66,15 @@ The main client for git operations:
 
 - `GitClient::new()` - Creates a client with SSH config from environment variables
 - `GitClient::with_ssh_config(ssh_config)` - Creates a client with custom SSH configuration
+- `clone(url, destination)` - Clones a repository to the given path (SSH or HTTPS)
 - `pull(repo_path)` - Pulls updates for an existing repository
 - `checkout_branch(repo_path, branch_name)` - Checkouts a branch in the repository
+- `extract_repo_name(url)` - Extracts the repository name from a Git URL
+- `convert_ssh_to_https(url)` - Converts an SSH URL to HTTPS
+- `is_valid_git_url(url)` - Validates that a string is a recognized Git URL
+- `has_https_credentials()` - Checks if HTTPS credentials are available
+
+HTTPS authentication tries git credential helpers first, then falls back to the `GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_ACCESS_TOKEN` environment variables.
 
 ### Other Types
 
