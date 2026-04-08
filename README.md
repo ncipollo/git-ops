@@ -1,16 +1,18 @@
 # git-ops
 
-A Rust library for performing common git operations with support for SSH authentication.
+A crate providing ergonomics around common git2 operations.
 
 ## Features
 
-- **Git Client**: Simple interface for git operations
-- **Clone Operations**: Clone repositories via SSH or HTTPS
-- **Branch Checkout**: Checkout branches in repositories
-- **Pull Operations**: Pull changes from remote repositories
-- **SSH Authentication**: Built-in SSH credential handling
-- **HTTPS Authentication**: Credential helper and environment variable support
-- **Error Handling**: Comprehensive error types for git operations
+| Feature | Description |
+|---|---|
+| **Git Client** | Simple interface for git operations |
+| **Clone Operations** | Clone repositories via SSH or HTTPS |
+| **Branch Checkout** | Checkout branches in repositories |
+| **Pull Operations** | Pull changes from remote repositories |
+| **SSH Authentication** | Built-in SSH credential handling |
+| **HTTPS Authentication** | Credential helper and environment variable support |
+| **Error Handling** | Comprehensive error types for git operations |
 
 ## Installation
 
