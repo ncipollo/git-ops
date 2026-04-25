@@ -10,6 +10,7 @@ A crate providing ergonomics around common git2 operations.
 | **Clone Operations** | Clone repositories via SSH or HTTPS |
 | **Branch Checkout** | Checkout branches in repositories |
 | **Pull Operations** | Pull changes from remote repositories |
+| **Commit Operations** | Stage all changes and create commits, with optional GPG/SSH signing |
 | **SSH Authentication** | Built-in SSH credential handling |
 | **HTTPS Authentication** | Credential helper and environment variable support |
 | **Error Handling** | Comprehensive error types for git operations |
@@ -71,6 +72,7 @@ The main client for git operations:
 - `clone(url, destination)` - Clones a repository to the given path (SSH or HTTPS)
 - `pull(repo_path)` - Pulls updates for an existing repository
 - `checkout_branch(repo_path, branch_name)` - Checkouts a branch in the repository
+- `commit(repo_path, message)` - Stages all changes and creates a commit; signs if `commit.gpgsign = true` in git config
 - `extract_repo_name(url)` - Extracts the repository name from a Git URL
 - `convert_ssh_to_https(url)` - Converts an SSH URL to HTTPS
 - `is_valid_git_url(url)` - Validates that a string is a recognized Git URL
