@@ -11,6 +11,7 @@ A crate providing ergonomics around common git2 operations.
 | **Branch Checkout** | Checkout branches in repositories |
 | **Pull Operations** | Pull changes from remote repositories |
 | **Commit Operations** | Stage all changes and create commits, with optional GPG/SSH signing |
+| **Push Operations** | Push commits to a remote, with optional force and upstream setup |
 | **SSH Authentication** | Built-in SSH credential handling |
 | **HTTPS Authentication** | Credential helper and environment variable support |
 | **Error Handling** | Comprehensive error types for git operations |
@@ -73,6 +74,8 @@ The main client for git operations:
 - `pull(repo_path)` - Pulls updates for an existing repository
 - `checkout_branch(repo_path, branch_name)` - Checkouts a branch in the repository
 - `commit(repo_path, message)` - Stages all changes and creates a commit; signs if `commit.gpgsign = true` in git config
+- `push(repo_path)` - Pushes the current branch to its configured remote (defaults to `origin`)
+- `push_with_options(repo_path, options)` - Full control via `PushOptions` (remote, branch, force, upstream)
 - `extract_repo_name(url)` - Extracts the repository name from a Git URL
 - `convert_ssh_to_https(url)` - Converts an SSH URL to HTTPS
 - `is_valid_git_url(url)` - Validates that a string is a recognized Git URL
@@ -84,6 +87,7 @@ HTTPS authentication tries git credential helpers first, then falls back to the 
 
 - **`SshConfig`**: SSH authentication configuration
 - **`GitError`**: Error type for git operations
+- **`PushOptions`**: Configuration for `push_with_options` (remote override, branch override, force, set_upstream)
 
 ## Requirements
 

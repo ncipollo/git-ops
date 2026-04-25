@@ -8,11 +8,13 @@ use crate::clone::GitCloner;
 use crate::commit::GitCommit;
 use crate::error::GitError;
 use crate::pull::GitPuller;
+use crate::push::{GitPusher, PushOptions};
 
 /// Git operations client that handles repository cloning, pulling, and checkout with SSH authentication
 pub struct GitClient {
     puller: GitPuller,
     cloner: GitCloner,
+    pusher: GitPusher,
 }
 
 impl GitClient {
@@ -20,16 +22,26 @@ impl GitClient {
     pub fn new() -> Result<Self, GitError> {
         let ssh_config = SshConfig::from_environment()?;
         let puller = GitPuller::new(ssh_config.clone());
-        let cloner = GitCloner::new(ssh_config);
+        let cloner = GitCloner::new(ssh_config.clone());
+        let pusher = GitPusher::new(ssh_config);
 
-        Ok(Self { puller, cloner })
+        Ok(Self {
+            puller,
+            cloner,
+            pusher,
+        })
     }
 
     /// Create a new GitClient with custom SSH configuration
     pub fn with_ssh_config(ssh_config: SshConfig) -> Self {
         let puller = GitPuller::new(ssh_config.clone());
-        let cloner = GitCloner::new(ssh_config);
-        Self { puller, cloner }
+        let cloner = GitCloner::new(ssh_config.clone());
+        let pusher = GitPusher::new(ssh_config);
+        Self {
+            puller,
+            cloner,
+            pusher,
+        }
     }
 
     /// Clone a repository to the given destination path
@@ -59,6 +71,20 @@ impl GitClient {
     /// Returns an error if the branch doesn't exist or checkout fails
     pub fn checkout_branch(&self, repo_path: &Path, branch_name: &str) -> Result<(), GitError> {
         GitCheckout::checkout_branch(repo_path, branch_name)
+    }
+
+    /// Push the current branch to its configured remote (defaults to `origin`).
+    pub fn push(&self, repo_path: &Path) -> Result<(), GitError> {
+        self.pusher.push(repo_path)
+    }
+
+    /// Push with full control over remote, branch, force, and upstream options.
+    pub fn push_with_options(
+        &self,
+        repo_path: &Path,
+        options: &PushOptions,
+    ) -> Result<(), GitError> {
+        self.pusher.push_with_options(repo_path, options)
     }
 
     /// Commit staged and unstaged changes in the repository.

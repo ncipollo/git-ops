@@ -54,6 +54,13 @@ pub enum GitError {
         source: git2::Error,
     },
 
+    #[error("Failed to push repository at {path}: {source}")]
+    PushFailed {
+        path: PathBuf,
+        #[source]
+        source: git2::Error,
+    },
+
     #[error("Invalid repository URL: {0}")]
     InvalidUrl(String),
 
@@ -133,6 +140,12 @@ impl GitError {
             GitError::CommitFailed { path, .. } => {
                 format!(
                     "Failed to commit to repository at {}. Check your git configuration.",
+                    path.display()
+                )
+            }
+            GitError::PushFailed { path, .. } => {
+                format!(
+                    "Failed to push repository at {}. Check your credentials, network, and remote settings.",
                     path.display()
                 )
             }

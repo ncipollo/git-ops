@@ -6,7 +6,9 @@ mod commit;
 mod error;
 mod https;
 mod pull;
+mod push;
 
 pub use auth::SshConfig;
 pub use client::GitClient;
 pub use error::{GitError, SshError};
+pub use push::PushOptions;
