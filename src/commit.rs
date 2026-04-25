@@ -19,11 +19,10 @@ impl GitCommit {
             source,
         })?;
 
-        let signature =
-            git2_ext::ops::commit_signature(&repo).map_err(|source| GitError::CommitFailed {
-                path: repo_path.to_path_buf(),
-                source,
-            })?;
+        let signature = repo.signature().map_err(|source| GitError::CommitFailed {
+            path: repo_path.to_path_buf(),
+            source,
+        })?;
 
         // Only attempt signing if commit.gpgsign is explicitly enabled in git config
         let should_sign = git_config.get_bool("commit.gpgsign").unwrap_or(false);
