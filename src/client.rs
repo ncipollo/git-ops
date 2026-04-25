@@ -5,6 +5,7 @@ use git2::Repository;
 use crate::auth::SshConfig;
 use crate::checkout::GitCheckout;
 use crate::clone::GitCloner;
+use crate::commit::GitCommit;
 use crate::error::GitError;
 use crate::pull::GitPuller;
 
@@ -58,6 +59,17 @@ impl GitClient {
     /// Returns an error if the branch doesn't exist or checkout fails
     pub fn checkout_branch(&self, repo_path: &Path, branch_name: &str) -> Result<(), GitError> {
         GitCheckout::checkout_branch(repo_path, branch_name)
+    }
+
+    /// Commit staged and unstaged changes in the repository.
+    ///
+    /// Signing is enabled only when `commit.gpgsign = true` is set in git config.
+    ///
+    /// # Arguments
+    /// * `repo_path` - Path to the repository
+    /// * `message` - The commit message
+    pub fn commit(&self, repo_path: &Path, message: &str) -> Result<(), GitError> {
+        GitCommit::commit(repo_path, message)
     }
 
     /// Extract a repository name from a Git URL
