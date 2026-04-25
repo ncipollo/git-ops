@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 git2 = "0.20.4"
+git2-ext = "1.0.0"
 thiserror = "1.0.69"
 dirs = "5.0.1"
 

@@ -2,6 +2,7 @@ mod auth;
 mod checkout;
 mod client;
 mod clone;
+mod commit;
 mod error;
 mod https;
 mod pull;

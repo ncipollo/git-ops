@@ -47,6 +47,13 @@ pub enum GitError {
         source: git2::Error,
     },
 
+    #[error("Failed to commit to repository at {path}: {source}")]
+    CommitFailed {
+        path: PathBuf,
+        #[source]
+        source: git2::Error,
+    },
+
     #[error("Invalid repository URL: {0}")]
     InvalidUrl(String),
 
@@ -122,6 +129,12 @@ impl GitError {
             }
             GitError::CloneFailed { url, .. } => {
                 format!("Failed to clone repository from {url}. Check your credentials and network connection.")
+            }
+            GitError::CommitFailed { path, .. } => {
+                format!(
+                    "Failed to commit to repository at {}. Check your git configuration.",
+                    path.display()
+                )
             }
             GitError::InvalidUrl(url) => {
                 format!("Invalid repository URL: {url}. Make sure it's a valid Git URL.")
